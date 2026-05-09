@@ -1,68 +1,62 @@
 # Claude 开发指南
 
-## 代码风格遵循设置的 eslint 规范
+## 项目概述
+
+这是一个面向微信读书的 Chrome/Firefox 扩展（Manifest V3），提供以下功能：
+- 护眼色主题切换（绿色/橙色/暗色/白色）
+- 解除右键限制（恢复浏览器右键上下文菜单）
+
+## 命令
+
+```bash
+# 代码检查
+npm run lint        # 检查 ESLint 问题
+npm run lint-fix    # 自动修复 ESLint 问题
+
+# 构建
+npm run build-dev   # 开发构建（输出到 dist/）
+npm run build       # 生产构建
+```
+
+## 架构
+
+### 扩展入口
+
+- `src/content.ts` — 内容脚本，注入到 `weread.qq.com/web/reader/*`，初始化主题和右键模块
+
+### 内容脚本模块
+
+- `src/content/modules/content-theme.ts` — 主题切换（护眼色/橙色/暗色/白色）
+- `src/content/modules/content-rightClick.ts` — 解除右键限制
+- `src/content/modules/content-utils.ts` — CSS 加载工具（loadCSS/unloadCSS）
+
+### CSS
+
+- `src/content/static/css/theme/` — 主题样式表（green, orange, dark, white）
+- `src/content/static/css/common.css` — 通用样式
+- `src/content/static/css/content-theme-switch.css` — 主题切换 UI 样式
+- `src/content/static/css/readerControls.css` — 阅读控制栏样式
+
+### 构建系统
+
+- **Webpack 5** + ts-loader + babel-loader 处理 TypeScript
+- 输出到 `dist/` 目录
+
+## 代码风格
+
+- TypeScript strict 模式
+- ESLint 继承 `airbnb-base/legacy` + TypeScript 支持
+- 4 空格缩进
+- 不使用分号
+- 全局变量：`chrome` 和 `JQuery` 为 readonly
 
 ## 代码修改后的必要检查
 
-在完成任何代码修改后，请务必执行以下检查步骤：
+修改代码后请执行：
 
-### 1. ESLint 代码规范检查
 ```bash
-# 检查代码规范问题
-npm run lint
-
-# 自动修复可修复的规范问题
-npm run lint-fix
+npm run lint        # ESLint 检查
+npm run build-dev   # 构建验证
 ```
 
-### 2. 单元测试
-```bash
-# 运行所有测试
-npm test
-
-# 运行测试覆盖率检查
-npm run test:coverage
-```
-
-### 3. 构建验证
-```bash
-# 开发构建
-npm run build-dev
-
-# 生产构建
-npm run build
-```
-
-## 重要提醒
-
-⚠️ **在提交代码前，确保所有检查都通过：**
-- ESLint 检查无错误
-- TypeScript 编译无错误
-- 所有单元测试通过
-- 构建过程成功
-
-## 常见问题解决
-
-### ESLint 错误
-- 查看具体错误信息，按提示修复
-- 使用 `npm run lint-fix` 自动修复简单问题
-- 复杂问题需手动修复
-- **注意**: 项目目前有一些警告（主要是匿名函数命名），这些是历史代码风格问题，不影响功能
-
-### TypeScript 错误
-- 检查类型定义是否正确
-- 确保导入路径正确
-- 验证接口实现完整
-
-### 测试失败
-- 检查测试逻辑是否正确
-- 更新Mock数据以匹配代码变更
-- 确保异步操作正确处理
-
-## 开发流程
-
-1. 修改代码
-2. 运行 `npm run lint-fix`
-3. 运行 `npm test`
-
-遵循此流程可以确保代码质量和项目稳定性。
+确保 ESLint 无错误且构建成功后再提交。
