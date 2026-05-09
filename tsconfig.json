@@ -14,7 +14,7 @@
 		"removeComments": true,
 		"strict": true,
 		"noEmitOnError": true,
-		"moduleResolution":"Node",
+		"moduleResolution":"Bundler",
 		"typeRoots": [ "node_modules/@types" ],
 	}
 }
