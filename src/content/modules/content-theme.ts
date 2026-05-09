@@ -2,8 +2,6 @@ import 'arrive'
 
 /* 主要用于实现阅读页主题色切换时加载相应样式文件 */
 import $ from 'jquery'
-import Swal from 'sweetalert2'
-
 import { loadCSS, unloadCSS } from './content-utils'
 
 let curFlag = 0
@@ -137,9 +135,7 @@ function addThemeBtn() {
             $('.theme-switch-left').hide()
             event.stopPropagation()
         } catch (error) {
-            Swal.fire({
-                title: 'Oops...', text: '似乎出了点问题，刷新一下试试吧~', icon: 'error', confirmButtonText: 'OK'
-            })
+            console.error('主题切换出错：', error)
         }
     })
 }
