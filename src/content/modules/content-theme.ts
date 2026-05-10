@@ -110,7 +110,7 @@ function changeTheme(currentFlag: number, event?: JQuery.ClickEvent) {
     }
     curFlag = currentFlag
     updateHorizontalStyle()
-    chrome.storage.sync.set({ flag: currentFlag }, function () {
+    chrome.storage.sync.set({ flag: currentFlag }, function handleSetFlag() {
         if (chrome.runtime.lastError) alert('存储出错')
     })
 }
@@ -176,8 +176,8 @@ function addThemeSwitcher() {
 function initTheme() {
     console.log(tag, 'initTheme')
     // 主题初始化（记住上次设置的背景主题）
-    document.arrive('.readerControls_item', { onceOnly: true }, function () {
-        chrome.storage.sync.get(['flag'], function (result) {
+    document.arrive('.readerControls_item', { onceOnly: true }, function handleArrive() {
+        chrome.storage.sync.get(['flag'], function handleGetFlag(result) {
             console.log(tag, '主题初始化 - ', result.flag)
             curFlag = result.flag
             changeTheme(curFlag)
@@ -192,8 +192,8 @@ function initTheme() {
             let title = $(themeSwitch).attr('title')
             if (title) loadDarkWhiteCSS(title)
             // 监听主题切换按钮 title 属性变化
-            const observer = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
+            const observer = new MutationObserver(function handleMutation(mutations) {
+                mutations.forEach(function processMutation(mutation) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'title') {
                         title = $(mutation.target).attr('title')
                         console.log(tag, '黑白主题切换', title)
