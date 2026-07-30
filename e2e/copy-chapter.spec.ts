@@ -4,6 +4,8 @@ import { test, expect, chromium } from '@playwright/test'
 const TEST_URL = 'https://weread.qq.com/web/reader/52e320c0813ab9edeg01750fkc0c320a0232c0c7c76d365a'
 const EXTENSION_PATH = path.resolve(__dirname, '..', 'dist')
 const PROFILE_DIR = `${process.env.HOME}/.wereader-e2e-profile`
+// 1.6「深入剖析GPT架构」正文中的特征片段,用于校验复制到的是真实章节正文(而非封面/简介)
+const EXPECTED_BODY_SNIPPETS = ['自监督学习', '下一单词预测', 'Radford']
 
 test('复制当前章节为 Markdown', async () => {
     const context = await chromium.launchPersistentContext(PROFILE_DIR, {
@@ -56,6 +58,10 @@ test('复制当前章节为 Markdown', async () => {
         const title = await page.locator('.renderTargetPageInfo_header').first().textContent()
         expect(clip.length).toBeGreaterThan(0)
         if (title) expect(clip).toContain(title.trim())
+        // 校验复制到的是 1.6 章节真实正文,而非封面/简介
+        for (const snippet of EXPECTED_BODY_SNIPPETS) {
+            expect(clip).toContain(snippet)
+        }
     } finally {
         await context.close()
     }
