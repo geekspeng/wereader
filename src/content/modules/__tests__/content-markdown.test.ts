@@ -21,3 +21,23 @@ describe('domToMarkdown 内联格式', () => {
         expect(domToMarkdown(root).trim()).toBe('**b** *i* ~~d~~ [l](u)')
     })
 })
+
+describe('domToMarkdown 标题与代码', () => {
+    test('h2 转 ##', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<h2>标题二</h2>'
+        expect(domToMarkdown(root).trim()).toBe('## 标题二')
+    })
+
+    test('pre 转围栏代码块', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<pre>let x = 1</pre>'
+        expect(domToMarkdown(root).trim()).toBe('```\nlet x = 1\n```')
+    })
+
+    test('br 转换行', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<p>甲<br>乙</p>'
+        expect(domToMarkdown(root).trim()).toBe('甲\n乙')
+    })
+})

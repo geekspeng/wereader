@@ -41,6 +41,13 @@ function walkNode(node: Node): string {
     default:
         break
     }
+    if (tag === 'PRE') {
+        return `\n\`\`\`\n${el.textContent || ''}\n\`\`\`\n`
+    }
+    if (/^H[1-6]$/.test(tag)) {
+        const level = parseInt(tag.charAt(1), 10)
+        return `\n${'#'.repeat(level)} ${walkChildren(el).trim()}\n\n`
+    }
     const inner = walkChildren(el)
     if (BLOCK_TAGS.has(tag)) {
         return inner.trim() ? `${inner}\n\n` : ''
