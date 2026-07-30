@@ -19,6 +19,12 @@ test('复制当前章节为 Markdown', async () => {
     const page = await context.newPage()
     try {
         await page.goto(TEST_URL)
+        // 扩展是否成功加载:检查 content script 注入的 toast 样式是否进页面。
+        // Chrome 近期版本会封锁 Playwright 的 --load-extension 未打包扩展;
+        // 未加载时直接 skip(给出可操作说明),而不是傻等按钮超时。
+        const extLoaded = await page.evaluate(() => Array.from(document.querySelectorAll('style'))
+            .some((s) => s.textContent.includes('wereader-copy-toast')))
+        test.skip(!extLoaded, '扩展未加载(Chrome 封锁了 --load-extension)。请在真实 Chrome 中 chrome://extensions → 开发者模式 → 加载已解压的扩展程序 → 选 dist/ 手动验证,或为自动化设置企业策略')
         // 等待复制按钮注入(arrive 链路)
         const btn = page.locator('.readerControls_item.copy')
         await expect(btn).toBeVisible({ timeout: 30000 })
