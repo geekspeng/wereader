@@ -73,3 +73,23 @@ describe('domToMarkdown 图片/引用/列表/脚注', () => {
         expect(domToMarkdown(root).trim()).toBe('注（注：注内容）')
     })
 })
+
+describe('domToMarkdown 剔除 UI 与样式', () => {
+    test('style 块不进入输出', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<style>.a{color:red}</style><p>正文</p>'
+        expect(domToMarkdown(root).trim()).toBe('正文')
+    })
+
+    test('readerControls 控制栏文字不进入输出', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<div class="readerControls"><button>目录</button><button>笔记</button></div><p>正文</p>'
+        expect(domToMarkdown(root).trim()).toBe('正文')
+    })
+
+    test('3+ 连续换行压成 2', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<p>甲</p><p>乙</p>'
+        expect(domToMarkdown(root)).not.toMatch(/\n{3,}/)
+    })
+})
