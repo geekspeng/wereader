@@ -41,3 +41,35 @@ describe('domToMarkdown 标题与代码', () => {
         expect(domToMarkdown(root).trim()).toBe('甲\n乙')
     })
 })
+
+describe('domToMarkdown 图片/引用/列表/脚注', () => {
+    test('img 取 data-src', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<img data-src="http://e/a.jpg" alt="图">'
+        expect(domToMarkdown(root).trim()).toBe('![图](http://e/a.jpg)')
+    })
+
+    test('img 无 data-src 时取 src', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<img src="http://e/b.jpg">'
+        expect(domToMarkdown(root).trim()).toBe('![b.jpg](http://e/b.jpg)')
+    })
+
+    test('blockquote 每行加 > 前缀', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<blockquote>第一行<br>第二行</blockquote>'
+        expect(domToMarkdown(root).trim()).toBe('> 第一行\n> 第二行')
+    })
+
+    test('li 转 - 项', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<ul><li>甲</li><li>乙</li></ul>'
+        expect(domToMarkdown(root).trim()).toBe('- 甲\n- 乙')
+    })
+
+    test('data-wr-footernote 元素内联脚注', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<span data-wr-footernote="注内容">注</span>'
+        expect(domToMarkdown(root).trim()).toBe('注（注：注内容）')
+    })
+})

@@ -15,6 +15,17 @@ const EXCLUDE_SELECTOR = [
 ].join(',')
 
 /* eslint-disable no-use-before-define */
+function imgMarkdown(el: HTMLElement): string {
+    const src = el.getAttribute('data-src') || el.getAttribute('src') || ''
+    const alt = el.getAttribute('alt') || (src.split('/').pop() || '')
+    return `\n![${alt}](${src})\n`
+}
+
+function footnoteMarkdown(el: HTMLElement): string {
+    const note = el.getAttribute('data-wr-footernote')
+    return note ? `（注：${note}）` : ''
+}
+
 function walkChildren(el: HTMLElement): string {
     return Array.from(el.childNodes).map((node) => walkNode(node)).join('')
 }
@@ -38,6 +49,14 @@ function walkNode(node: Node): string {
         const href = el.getAttribute('href') || ''
         return `[${walkChildren(el)}](${href})`
     }
+    case 'IMG':
+        return imgMarkdown(el)
+    case 'BLOCKQUOTE': {
+        const inner = walkChildren(el).trim()
+        return inner.split('\n').map((l) => `> ${l}`).join('\n') + '\n\n'
+    }
+    case 'LI':
+        return `- ${walkChildren(el).trim()}\n`
     default:
         break
     }
@@ -49,10 +68,12 @@ function walkNode(node: Node): string {
         return `\n${'#'.repeat(level)} ${walkChildren(el).trim()}\n\n`
     }
     const inner = walkChildren(el)
+    const foot = footnoteMarkdown(el)
+    const content = inner + foot
     if (BLOCK_TAGS.has(tag)) {
-        return inner.trim() ? `${inner}\n\n` : ''
+        return content.trim() ? `${content}\n\n` : ''
     }
-    return inner
+    return content
 }
 /* eslint-enable no-use-before-define */
 
