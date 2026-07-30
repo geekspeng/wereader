@@ -17,14 +17,20 @@ test('复制当前章节为 Markdown', async () => {
     const page = await context.newPage()
     try {
         await page.goto(TEST_URL)
-        // 未登录则 skip
-        const loginLink = page.locator('.readerTopBar_link', { hasText: '登录' })
-        if (await loginLink.count() > 0 && await loginLink.first().isVisible()) {
-            test.skip(true, '未登录,请在持久 profile 中登录微信读书后重试')
-        }
         // 等待复制按钮注入(arrive 链路)
         const btn = page.locator('.readerControls_item.copy')
         await expect(btn).toBeVisible({ timeout: 30000 })
+        // 章节正文是否完整可用:只展示部分内容(需登录/被反爬)则跳过。
+        // 注:登录按钮只反映会话态,不代表正文是否可读,故不以其为判据。
+        const contentReady = await page.evaluate(() => {
+            const el = document.querySelector('.renderTargetContainer')
+                || document.querySelector('.readerChapterContent')
+                || document.querySelector('.app_content')
+            if (!el) return false
+            const text = el.textContent || ''
+            return text.replace(/\s/g, '').length > 0
+        })
+        test.skip(!contentReady, '章节正文未完整加载(可能需要登录或被反爬限制)')
         // 字体反爬判定
         const obfuscated = await page.evaluate(() => {
             const el = document.querySelector('.renderTargetContainer')
