@@ -27,6 +27,20 @@ function walkNode(node: Node): string {
     const el = node as HTMLElement
     const tag = el.tagName
     if (tag === 'BR') return '\n'
+    switch (tag) {
+    case 'STRONG': case 'B':
+        return `**${walkChildren(el)}**`
+    case 'EM': case 'I':
+        return `*${walkChildren(el)}*`
+    case 'DEL': case 'S':
+        return `~~${walkChildren(el)}~~`
+    case 'A': {
+        const href = el.getAttribute('href') || ''
+        return `[${walkChildren(el)}](${href})`
+    }
+    default:
+        break
+    }
     const inner = walkChildren(el)
     if (BLOCK_TAGS.has(tag)) {
         return inner.trim() ? `${inner}\n\n` : ''
