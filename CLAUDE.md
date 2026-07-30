@@ -16,6 +16,9 @@ npm run lint-fix    # 自动修复 ESLint 问题
 # 构建
 npm run build-dev   # 开发构建（输出到 dist/）
 npm run build       # 生产构建
+
+# 测试
+npm run test:e2e    # Playwright e2e（需登录态持久 profile）
 ```
 
 ## 架构
@@ -28,6 +31,8 @@ npm run build       # 生产构建
 
 - `src/content/modules/content-theme.ts` — 主题切换（护眼色/橙色/暗色/白色）
 - `src/content/modules/content-rightClick.ts` — 解除右键限制
+- `src/content/modules/content-markdown.ts` — DOM → Markdown 纯转换
+- `src/content/modules/content-copy.ts` — 复制本章按钮与剪贴板
 - `src/content/modules/content-utils.ts` — CSS 加载工具（loadCSS/unloadCSS）
 
 ### CSS
@@ -35,6 +40,7 @@ npm run build       # 生产构建
 - `src/content/static/css/theme/` — 主题样式表（green, orange, dark, white）
 - `src/content/static/css/common.css` — 通用样式
 - `src/content/static/css/content-theme-switch.css` — 主题切换 UI 样式
+- `src/content/static/css/content-copy.css` — 复制本章按钮样式
 - `src/content/static/css/readerControls.css` — 阅读控制栏样式
 
 ### 构建系统
