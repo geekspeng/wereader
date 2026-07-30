@@ -87,10 +87,14 @@ function domToMarkdown(root: HTMLElement): string {
         .trim()
 }
 
-// 占位:Task 6 实现字体混淆检测;`_text` 前缀表故意未用。
-// eslint-disable-next-line no-unused-vars
-function isLikelyFontObfuscated(_text: string): boolean {
-    return false
+function isLikelyFontObfuscated(text: string): boolean {
+    const nonSpace = text.replace(/\s/g, '')
+    if (!nonSpace) return false
+    const pua = Array.from(nonSpace).filter((ch) => {
+        const code = ch.codePointAt(0) || 0
+        return code >= 0xE000 && code <= 0xF8FF
+    }).length
+    return pua / nonSpace.length > 0.3
 }
 
 export { domToMarkdown, isLikelyFontObfuscated }

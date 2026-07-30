@@ -1,4 +1,4 @@
-import { domToMarkdown } from '../content-markdown'
+import { domToMarkdown, isLikelyFontObfuscated } from '../content-markdown'
 
 describe('domToMarkdown 基线', () => {
     test('单个段落 div 转为纯文本', () => {
@@ -91,5 +91,23 @@ describe('domToMarkdown 剔除 UI 与样式', () => {
         const root = document.createElement('div')
         root.innerHTML = '<p>甲</p><p>乙</p>'
         expect(domToMarkdown(root)).not.toMatch(/\n{3,}/)
+    })
+})
+
+describe('isLikelyFontObfuscated', () => {
+    test('正常中文返回 false', () => {
+        expect(isLikelyFontObfuscated('这是一段正常的中文正文')).toBe(false)
+    })
+
+    test('PUA 占比高返回 true', () => {
+        // PUA 区字符
+        const pua = String.fromCharCode(0xE000)
+            + String.fromCharCode(0xE001)
+            + String.fromCharCode(0xE002)
+        expect(isLikelyFontObfuscated(`${pua}${pua}${pua}正`)).toBe(true)
+    })
+
+    test('空字符串返回 false', () => {
+        expect(isLikelyFontObfuscated('')).toBe(false)
     })
 })
