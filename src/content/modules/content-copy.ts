@@ -28,10 +28,12 @@ async function copyToClipboard(text: string): Promise<boolean> {
             ta.style.position = 'fixed'
             ta.style.opacity = '0'
             document.body.appendChild(ta)
-            ta.select()
-            const ok = document.execCommand('copy')
-            document.body.removeChild(ta)
-            return ok
+            try {
+                ta.select()
+                return document.execCommand('copy')
+            } finally {
+                document.body.removeChild(ta)
+            }
         } catch (err2) {
             console.error(tag, 'execCommand 复制失败', err2)
             return false
