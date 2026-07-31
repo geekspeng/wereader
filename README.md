@@ -29,6 +29,12 @@ Wereader 是一个面向[微信读书](https://weread.qq.com/)网页版的浏览
 - 拦截微信读书网页对 `contextmenu` 事件的屏蔽；
 - 恢复浏览器原生右键菜单，方便复制文字、查询等操作。
 
+### 复制本章
+
+- 在阅读页右下角控制栏新增「复制本章」按钮；
+- 点击后遍历当前章节正文，转为 Markdown（保留标题、加粗、图片、代码块、引用等）写入剪贴板；
+- 对检测到字体加密的章节会给出乱码告警。
+
 ## 安装
 
 ### 方式一：从源码构建
@@ -80,6 +86,7 @@ npm run build-dev
 - TypeScript（strict 模式）
 - Webpack 5 + ts-loader + babel-loader
 - jQuery + [arrive](https://github.com/uzairfarooq/arrive)（DOM 变动监听）
+- Jest + [@playwright/test](https://playwright.dev)（单元测试与 e2e 测试）
 
 ## 项目结构
 
@@ -90,10 +97,13 @@ src/
     ├── modules/
     │   ├── content-theme.ts            # 主题切换
     │   ├── content-rightClick.ts       # 解除右键限制
+    │   ├── content-copy.ts             # 复制本章按钮与剪贴板
+    │   ├── content-markdown.ts         # DOM → Markdown 纯转换
     │   └── content-utils.ts            # CSS 加载工具（loadCSS / unloadCSS）
     └── static/css/
         ├── common.css                  # 通用样式
         ├── content-theme-switch.css    # 主题切换面板样式
+        ├── content-copy.css            # 复制本章按钮样式
         ├── readerControls.css          # 阅读控制栏样式
         └── theme/                      # 各主题样式（green / orange / dark / white）
 public/

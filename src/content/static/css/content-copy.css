@@ -1,0 +1,17 @@
+.wereader-copy-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2147483647;
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: #323232;
+    color: #fff;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    animation: wereader-toast-in 0.2s ease forwards;
+}
+@keyframes wereader-toast-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

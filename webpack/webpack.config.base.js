@@ -43,6 +43,8 @@ const babelLoader = {
 module.exports = {
     entry: {
         content: path.resolve(__dirname, "..", "src", "content.ts"),
+        // document_start 运行的独立 hook 脚本(无 CSS),捕获章节分片。见 content-hook.ts
+        "content-hook": path.resolve(__dirname, "..", "src", "content", "modules", "content-hook.ts"),
     },
 
     output: {

@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "微信读书笔记助手",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "一个还不错的微信读书笔记工具，方便你导出书本标注等内容，对常使用 Markdown 做笔记的用户比较有帮助。",
     "icons": {
         "16": "icons/extension-icons/icon16.png",
@@ -26,6 +26,16 @@
             ],
             "css": [],
             "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "*://weread.qq.com/web/reader/*"
+            ],
+            "js": [
+                "content-hook.js"
+            ],
+            "world": "MAIN",
+            "run_at": "document_start"
         }
     ],
     "web_accessible_resources": [
