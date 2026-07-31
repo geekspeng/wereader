@@ -5,7 +5,6 @@ export default defineConfig({
     timeout: 90000,
     use: {
         headless: false,
-        channel: 'chrome',
         viewport: { width: 1280, height: 900 }
     }
 })

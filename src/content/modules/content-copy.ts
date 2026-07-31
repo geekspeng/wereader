@@ -4,16 +4,38 @@ import { domToMarkdown, isLikelyFontObfuscated } from './content-markdown'
 
 const tag = 'content-copy: '
 
-function getChapterRoot(): HTMLElement | null {
-    return document.querySelector('.renderTargetContainer')
-        || document.querySelector('.readerChapterContent')
-        || document.querySelector('.app_content')
+// content-hook.ts(document_start 运行)把捕获到的章节 XHTML 分片写入此 DOM 元素
+// (JSON: { current, chapters: { chapterId: { index: html } } })。这里读取并拼装。
+const DATA_ID = '__weread_chapter_data'
+
+interface ChapterStore {
+    current: string
+    chapters: { [chapterId: string]: { [index: number]: string } }
 }
 
 function getChapterTitle(): string {
-    const el = document.querySelector('.renderTargetPageInfo_header')
-        || document.querySelector('.readerTopBar_title_chapter')
+    const el = document.querySelector('.readerTopBar_title_chapter')
+        || document.querySelector('.renderTargetPageInfo_header')
     return el ? (el.textContent || '').replace(/^\s+|\s+$/g, '') : ''
+}
+
+// 拼装当前章节各分片为一段 XHTML
+function assembleChapterHtml(): string {
+    const el = document.getElementById(DATA_ID)
+    if (!el || !el.textContent) return ''
+    let store: ChapterStore
+    try {
+        store = JSON.parse(el.textContent) as ChapterStore
+    } catch (e) {
+        return ''
+    }
+    const cid = store.current
+    const chapter = cid ? store.chapters[cid] : null
+    if (!chapter) return ''
+    return Object.keys(chapter).map((k) => parseInt(k, 10))
+        .sort((a, b) => a - b)
+        .map((i) => chapter[i] || '')
+        .join('\n')
 }
 
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -52,16 +74,22 @@ function showToast(msg: string): void {
 }
 
 async function handleCopy(): Promise<void> {
-    const root = getChapterRoot()
-    if (!root) { showToast('未找到章节内容'); return }
+    const html = assembleChapterHtml()
+    if (!html) { showToast('未捕获到本章内容(请稍候或翻到本章再试)'); return }
     const title = getChapterTitle()
-    const body = domToMarkdown(root)
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    // 章节 XHTML 自带一个与标题重复的章节标题(h1/h2),去掉,避免与置顶的 # 标题重复
+    if (title) {
+        const first = doc.body.querySelector('h1, h2, h3')
+        if (first && (first.textContent || '').replace(/^\s+|\s+$/g, '') === title) first.remove()
+    }
+    const body = domToMarkdown(doc.body)
     if (!body) { showToast('本章无文本内容'); return }
     const md = title ? `# ${title}\n\n${body}` : body
     const ok = await copyToClipboard(md)
     if (!ok) { showToast('复制失败,请重试'); return }
     if (isLikelyFontObfuscated(md)) {
-        showToast('已复制本章内容(检测到字体加密,结果可能为乱码)')
+        showToast('已复制本章内容(检测到字体加密,结果可能含乱码)')
     } else {
         showToast('已复制本章内容')
     }

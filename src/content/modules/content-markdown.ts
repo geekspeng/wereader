@@ -49,6 +49,15 @@ function walkNode(node: Node): string {
         const href = el.getAttribute('href') || ''
         return `[${walkChildren(el)}](${href})`
     }
+    case 'SPAN': {
+        // weread 章节正文用 <span class="bold|italic|strikethrough|..."> 表示行内格式
+        const cls = typeof el.className === 'string' ? el.className : ''
+        let inner = walkChildren(el)
+        if (/\bbold\b/.test(cls)) inner = `**${inner}**`
+        else if (/\bitalic\b/.test(cls)) inner = `*${inner}*`
+        else if (/\b(strikethrough|strike|del)\b/.test(cls)) inner = `~~${inner}~~`
+        return inner + footnoteMarkdown(el)
+    }
     case 'IMG':
         return imgMarkdown(el)
     case 'BLOCKQUOTE': {

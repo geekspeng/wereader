@@ -22,6 +22,32 @@ describe('domToMarkdown 内联格式', () => {
     })
 })
 
+describe('domToMarkdown weread span 行内格式', () => {
+    test('span.bold 转加粗', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<p>下一单词预测任务采用的是<span class="bold">自监督学习</span>模式</p>'
+        expect(domToMarkdown(root).trim()).toBe('下一单词预测任务采用的是**自监督学习**模式')
+    })
+
+    test('span.italic 转斜体', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<span class="italic">i</span>'
+        expect(domToMarkdown(root).trim()).toBe('*i*')
+    })
+
+    test('span.strikethrough 转删除线', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<span class="strikethrough">s</span>'
+        expect(domToMarkdown(root).trim()).toBe('~~s~~')
+    })
+
+    test('无格式 class 的 span 只透传内容', () => {
+        const root = document.createElement('div')
+        root.innerHTML = '<p>前<span class="foo">中</span>后</p>'
+        expect(domToMarkdown(root).trim()).toBe('前中后')
+    })
+})
+
 describe('domToMarkdown 标题与代码', () => {
     test('h2 转 ##', () => {
         const root = document.createElement('div')
